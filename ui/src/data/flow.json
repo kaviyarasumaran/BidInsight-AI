@@ -1,0 +1,280 @@
+{
+    "nodes": [
+      {
+        "id": "node_1750331725494",
+        "type": "custom",
+        "position": {
+          "x": 0.6641003844291617,
+          "y": -227.42684870294048
+        },
+        "data": {
+          "label": "Start",
+          "description": "Start node for workflow entry point.",
+          "iconName": "IconPlayerPlay",
+          "iconColor": "#4caf50"
+        }
+      },
+      {
+        "id": "node_1750331735732",
+        "type": "custom",
+        "position": {
+          "x": 385.4374053408145,
+          "y": -231.2463833622693
+        },
+        "data": {
+          "label": "Proposal Intake",
+          "description": "System task for proposal submission completeness check and case ID assignment.",
+          "iconName": "IconFileText",
+          "iconColor": "#2196f3",
+          "metadata": {
+            "taskOwner": "System",
+            "sla": "30 minutes",
+            "hitl": false,
+            "mappedAgent": "None (system task)",
+            "decisionRules": "Check for completeness of submission, assign case ID",
+            "thresholds": null,
+            "nodeDetails": {
+              "title": "Node 1: Proposal Intake",
+              "taskOwner": "System",
+              "decisionRules": "Check for completeness of submission, assign case ID",
+              "sla": "30 minutes",
+              "hitl": "No",
+              "mappedAgent": "None (system task)",
+              "shape": "🔹"
+            }
+          }
+        }
+      },
+      {
+        "id": "node_1750331741917",
+        "type": "custom",
+        "position": {
+          "x": 807.798904733166,
+          "y": -227.1981900773586
+        },
+        "data": {
+          "label": "Triage",
+          "description": "AI agent for classifying proposals as Standard, Incomplete, or High-Risk.",
+          "iconName": "IconClipboardCheck",
+          "iconColor": "#ff9800",
+          "metadata": {
+            "taskOwner": "AI Agent",
+            "sla": "45 minutes",
+            "hitl": false,
+            "mappedAgent": "Triage Agent",
+            "decisionRules": "Classify as: Standard, Incomplete, or High-Risk. Incomplete = missing income proof, partial documents. High-risk = age > 55, SA > ₹50L, smoker",
+            "thresholds": "Confidence < 75% → escalate to UW",
+            "nodeDetails": {
+              "title": "Node 2: Triage",
+              "taskOwner": "AI Agent",
+              "decisionRules": "Classify as: Standard, Incomplete, or High-Risk\nIncomplete = missing income proof, partial documents\nHigh-risk = age > 55, SA > ₹50L, smoker",
+              "sla": "45 minutes",
+              "hitl": "No",
+              "mappedAgent": "✅ Triage Agent",
+              "thresholds": "Confidence < 75% → escalate to UW",
+              "shape": "🔹"
+            }
+          }
+        }
+      },
+      {
+        "id": "node_1750331750548",
+        "type": "custom",
+        "position": {
+          "x": 1243.6543817418863,
+          "y": -229.8969856006324
+        },
+        "data": {
+          "label": "Document Review",
+          "description": "AI agent for document verification and consistency checking with optional UW intervention.",
+          "iconName": "IconFileSearch",
+          "iconColor": "#4caf50",
+          "metadata": {
+            "taskOwner": "AI Agent + Optional UW",
+            "sla": "1 hour",
+            "hitl": true,
+            "mappedAgents": [
+              "Doc Interpretation Agent",
+              "Risk Flag Agent"
+            ],
+            "decisionRules": "Match DOB, PAN, declared income vs. proof. Flag mismatch or missing documents",
+            "thresholds": ">2 red flags → escalate to HITL",
+            "nodeDetails": {
+              "title": "Node 3: Document Review",
+              "taskOwner": "AI Agent + Optional UW",
+              "decisionRules": "Match DOB, PAN, declared income vs. proof\nFlag mismatch or missing documents",
+              "sla": "1 hour",
+              "hitl": "Yes if inconsistencies are detected",
+              "mappedAgents": "✅ Doc Interpretation Agent\n✅ Risk Flag Agent",
+              "thresholds": ">2 red flags → escalate to HITL",
+              "shape": "🔹"
+            }
+          }
+        }
+      },
+      {
+        "id": "node_1750331758523",
+        "type": "custom",
+        "position": {
+          "x": -31.52650300498931,
+          "y": 285.5729593446655
+        },
+        "data": {
+          "label": "Pricing Decision",
+          "description": "AI agent for applying premium adjustment rules from the rulebook.",
+          "iconName": "IconCalculator",
+          "iconColor": "#9c27b0",
+          "metadata": {
+            "taskOwner": "AI Agent",
+            "sla": "1 hour",
+            "hitl": false,
+            "mappedAgent": "Rulebook Lookup Agent",
+            "decisionRules": "Apply premium adjustment rules from the rulebook. Example: BMI > 32 → +15%, Smoker → +25%",
+            "thresholds": "Rule conflict or rule not found → escalate",
+            "nodeDetails": {
+              "title": "Node 4: Pricing Decision",
+              "taskOwner": "AI Agent",
+              "decisionRules": "Apply premium adjustment rules from the rulebook\nExample: BMI > 32 → +15%, Smoker → +25%",
+              "sla": "1 hour",
+              "hitl": "No",
+              "mappedAgent": "✅ Rulebook Lookup Agent",
+              "thresholds": "Rule conflict or rule not found → escalate",
+              "shape": "🔹"
+            }
+          }
+        }
+      },
+      {
+        "id": "node_1750331764503",
+        "type": "custom",
+        "position": {
+          "x": 398.9313829571836,
+          "y": 281.52476605975477
+        },
+        "data": {
+          "label": "Escalation",
+          "description": "AI agent for claims risk modeling and routing flagged cases to Human UW.",
+          "iconName": "IconAlertTriangle",
+          "iconColor": "#f44336",
+          "metadata": {
+            "taskOwner": "AI Agent + Human UW",
+            "sla": "2 hours",
+            "hitl": true,
+            "mappedAgents": [
+              "Claims Propensity Agent",
+              "HITL Escalation Agent"
+            ],
+            "decisionRules": "Run Claims Risk Model. Check if escalation is required (risk score > threshold). Route flagged cases to Human UW",
+            "thresholds": "Risk Score > 0.70",
+            "nodeDetails": {
+              "title": "Node 5: Escalation",
+              "taskOwner": "AI Agent + Human UW",
+              "decisionRules": "Run Claims Risk Model\nCheck if escalation is required (risk score > threshold)\nRoute flagged cases to Human UW",
+              "sla": "2 hours",
+              "hitl": "✅ Yes",
+              "mappedAgents": "✅ Claims Propensity Agent\n✅ HITL Escalation Agent",
+              "thresholds": "Risk Score > 0.70",
+              "shape": "🔹"
+            }
+          }
+        }
+      },
+      {
+        "id": "node_1750331770337",
+        "type": "custom",
+        "position": {
+          "x": 833.4374622042671,
+          "y": 269.3801862050226
+        },
+        "data": {
+          "label": "Issue Policy",
+          "description": "Final policy issuance with optional decision suggestion based on case trail.",
+          "iconName": "IconFileCertificate",
+          "iconColor": "#00c853",
+          "metadata": {
+            "taskOwner": "Human / Ops",
+            "sla": "3 hours",
+            "hitl": true,
+            "mappedAgent": "None (optional: decision suggestion based on case trail)",
+            "decisionRules": "Final STP issue if all checks pass. Else manual validation + issuance",
+            "thresholds": null,
+            "nodeDetails": {
+              "title": "Node 6: Issue Policy",
+              "taskOwner": "Human / Ops",
+              "decisionRules": "Final STP issue if all checks pass\nElse manual validation + issuance",
+              "sla": "3 hours",
+              "hitl": "Yes",
+              "mappedAgent": "None (optional: decision suggestion based on case trail)",
+              "thresholds": null,
+              "shape": "🔹"
+            }
+          }
+        }
+      },
+      {
+        "id": "node_1750331774147",
+        "type": "custom",
+        "position": {
+          "x": 1292.232701160815,
+          "y": 270.72958396665956
+        },
+        "data": {
+          "label": "End",
+          "description": "End node for workflow termination.",
+          "iconName": "material-symbols:line-end-square-rounded",
+          "iconColor": "#f44336"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-node_1750331725494-node_1750331735732-1750331780869",
+        "source": "node_1750331725494",
+        "target": "node_1750331735732",
+        "type": "custom",
+        "animated": true
+      },
+      {
+        "id": "edge-node_1750331735732-node_1750331741917-1750331782481",
+        "source": "node_1750331735732",
+        "target": "node_1750331741917",
+        "type": "custom",
+        "animated": true
+      },
+      {
+        "id": "edge-node_1750331741917-node_1750331750548-1750331784361",
+        "source": "node_1750331741917",
+        "target": "node_1750331750548",
+        "type": "custom",
+        "animated": true
+      },
+      {
+        "id": "edge-node_1750331750548-node_1750331758523-1750331787279",
+        "source": "node_1750331750548",
+        "target": "node_1750331758523",
+        "type": "custom",
+        "animated": true
+      },
+      {
+        "id": "edge-node_1750331758523-node_1750331764503-1750331788902",
+        "source": "node_1750331758523",
+        "target": "node_1750331764503",
+        "type": "custom",
+        "animated": true
+      },
+      {
+        "id": "edge-node_1750331764503-node_1750331770337-1750331790284",
+        "source": "node_1750331764503",
+        "target": "node_1750331770337",
+        "type": "custom",
+        "animated": true
+      },
+      {
+        "id": "edge-node_1750331770337-node_1750331774147-1750331792260",
+        "source": "node_1750331770337",
+        "target": "node_1750331774147",
+        "type": "custom",
+        "animated": true
+      }
+    ]
+  }

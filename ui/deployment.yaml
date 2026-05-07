@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: zentis-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zentis-ui
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  minReadySeconds: 5 
+  template:
+    metadata:
+      labels:
+        app: zentis-ui
+    spec:
+      nodeSelector:
+        "kubernetes.io/os": linux
+      containers:
+      - name: zentis-ui
+        image: rakbankdevcontainerregistry.azurecr.io/zentis-ui:1
+        ports:
+        - containerPort: 3000
+        resources:
+          requests:
+            cpu: 250m
+          limits:
+            cpu: 500m
+        env:
+        - name: MONGO_URI
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: MONGO_URI
+        - name: MONGO_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: MONGO_DATABASE
+        - name: RABBITMQ_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: RABBITMQ_HOST
+        - name: RABBITMQ_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: db-config
+              key: RABBITMQ_USERNAME
+        - name: RABBITMQ_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-creds
+              key: RABBITMQ_PASSWORD
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: zentis-ui
+spec:
+  ports:
+  - port: 80
+    targetPort: 3000
+  selector:
+    app: zentis-ui
+  type: LoadBalancer
